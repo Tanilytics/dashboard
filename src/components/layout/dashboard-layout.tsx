@@ -123,7 +123,7 @@ function SiteSwitcher({ collapsed }: { collapsed: boolean }) {
   if (sites.length === 0) {
     return (
       <Link
-        to="/onboarding"
+        to="/sites/new"
         className={cn(
           "flex items-center gap-2 rounded-lg border border-border text-xs text-muted-foreground hover:bg-accent transition-colors",
           collapsed ? "justify-center p-2" : "px-3 py-2",
@@ -135,29 +135,7 @@ function SiteSwitcher({ collapsed }: { collapsed: boolean }) {
     );
   }
 
-  if (sites.length === 1) {
-    return (
-      <div
-        className={cn(
-          "flex items-center gap-2 rounded-lg border border-border text-xs text-muted-foreground",
-          collapsed ? "justify-center p-2" : "px-3 py-2",
-        )}
-      >
-        <div
-          className="flex size-7 items-center justify-center rounded-[7px] text-xs font-bold shrink-0"
-          style={{
-            background: "oklch(58% 0.16 35 / 0.15)",
-            color: "var(--primary)",
-          }}
-        >
-          {currentSite?.name.charAt(0).toUpperCase() || "?"}
-        </div>
-        {!collapsed && <span className="truncate">{currentSite?.name}</span>}
-      </div>
-    );
-  }
-
-  const siteColors = [
+	const siteColors = [
     { bg: "oklch(58% 0.16 35 / 0.15)", fg: "var(--primary)" },
     { bg: "oklch(55% 0.12 250 / 0.2)", fg: "oklch(65% 0.14 250)" },
     { bg: "oklch(58% 0.14 145 / 0.15)", fg: "oklch(65% 0.14 145)" },
@@ -258,7 +236,7 @@ function SiteSwitcher({ collapsed }: { collapsed: boolean }) {
         <button
           type="button"
           onClick={() => {
-            navigate({ to: "/onboarding" });
+            navigate({ to: "/sites/new" });
             setOpen(false);
           }}
           className="w-full flex items-center gap-3 px-[10px] py-2 rounded-md text-left transition-colors hover:bg-[oklch(28%_0.015_60_/_0.5)]"

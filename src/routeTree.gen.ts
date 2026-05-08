@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as SitesNewRouteImport } from './routes/sites.new'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardRealtimeRouteImport } from './routes/dashboard.realtime'
 import { Route as DashboardPagesRouteImport } from './routes/dashboard.pages'
@@ -52,6 +53,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const SitesNewRoute = SitesNewRouteImport.update({
+  id: '/sites/new',
+  path: '/sites/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/pages': typeof DashboardPagesRoute
   '/dashboard/realtime': typeof DashboardRealtimeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/sites/new': typeof SitesNewRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/dashboard/pages': typeof DashboardPagesRoute
   '/dashboard/realtime': typeof DashboardRealtimeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/sites/new': typeof SitesNewRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/dashboard/pages': typeof DashboardPagesRoute
   '/dashboard/realtime': typeof DashboardRealtimeRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/sites/new': typeof SitesNewRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/dashboard/pages'
     | '/dashboard/realtime'
     | '/dashboard/settings'
+    | '/sites/new'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/dashboard/pages'
     | '/dashboard/realtime'
     | '/dashboard/settings'
+    | '/sites/new'
     | '/dashboard'
   id:
     | '__root__'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/dashboard/pages'
     | '/dashboard/realtime'
     | '/dashboard/settings'
+    | '/sites/new'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   RegisterRoute: typeof RegisterRoute
+  SitesNewRoute: typeof SitesNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/sites/new': {
+      id: '/sites/new'
+      path: '/sites/new'
+      fullPath: '/sites/new'
+      preLoaderRoute: typeof SitesNewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/settings': {
       id: '/dashboard/settings'
@@ -317,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   RegisterRoute: RegisterRoute,
+  SitesNewRoute: SitesNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
