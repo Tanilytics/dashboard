@@ -1,4 +1,5 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useNavigate } from '@tanstack/react-router'
 import type { UserResponse, SiteResponse } from '#/types/api'
 
 export const userAtom = atom<UserResponse | null>(null)
@@ -14,15 +15,20 @@ const logoutAtom = atom(null, (_get, set) => {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
   }
-  window.location.href = '/login'
 })
 
 export function useAuth() {
+  const navigate = useNavigate()
   const [user, setUser] = useAtom(userAtom)
   const [sites, setSites] = useAtom(sitesAtom)
   const [currentSiteId, setCurrentSiteId] = useAtom(currentSiteIdAtom)
   const isLoading = useAtomValue(isLoadingAtom)
-  const logout = useSetAtom(logoutAtom)
+  const clearAuth = useSetAtom(logoutAtom)
+
+  const logout = () => {
+    clearAuth()
+    navigate({ to: '/login' })
+  }
 
   return {
     user,

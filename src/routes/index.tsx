@@ -7,11 +7,13 @@ import { createPixelReveal } from "landing-effects";
 
 import CardNav from "@/components/bits/CardNav";
 import MagicBento from "@/components/bits/MagicBento";
+import { redirectIfAuth } from "#/lib/auth-guards";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
+  beforeLoad: redirectIfAuth,
 });
 
 function LandingPage() {

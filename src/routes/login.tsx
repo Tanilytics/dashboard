@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -7,15 +7,7 @@ import { Card, CardContent } from "#/components/ui/card";
 import { useAuth } from "#/hooks/use-auth";
 import { authApi } from "#/lib/api";
 import { toast } from "sonner";
-
-function redirectIfAuth() {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      throw redirect({ to: '/dashboard' })
-    }
-  }
-}
+import { redirectIfAuth } from "#/lib/auth-guards";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -32,6 +24,7 @@ function TanilyticsLogo({ className }: { className?: string }) {
 }
 
 function LoginPage() {
+  const navigate = useNavigate();
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +47,9 @@ function LoginPage() {
       });
 
       toast.success("Signed in successfully");
-      window.location.href = "/dashboard";
+      navigate({ to: "/dashboard" });
     } catch (err: any) {
-      toast.error(err.message || "Failed to sign in");
+      toast.error(err.detail || err.message || "Failed to sign in");
     } finally {
       setIsLoading(false);
     }

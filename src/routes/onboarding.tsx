@@ -1,27 +1,29 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Button } from '#/components/ui/button'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useState } from "react";
+import { Button } from "#/components/ui/button";
+import { Input } from "#/components/ui/input";
+import { Label } from "#/components/ui/label";
 
-import { toast } from 'sonner'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
-import { Copy, Check, Layers } from 'lucide-react'
-import { cn } from '#/lib/utils'
+import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { Copy, Check, Layers } from "lucide-react";
+import { cn } from "#/lib/utils";
+import { sitesApi } from "#/lib/api";
+import type { SiteResponse } from "#/types/api";
 
 function requireAuth() {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken')
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("accessToken");
     if (!token) {
-      throw redirect({ to: '/login' })
+      throw redirect({ to: "/login" });
     }
   }
 }
 
-export const Route = createFileRoute('/onboarding')({
+export const Route = createFileRoute("/onboarding")({
   component: OnboardingPage,
   beforeLoad: requireAuth,
-})
+});
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
@@ -31,20 +33,28 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
           key={step}
           className="size-2.5 rounded-full transition-colors"
           style={{
-            background: step === currentStep ? 'var(--primary)' : step < currentStep ? 'var(--primary)' : 'var(--border)',
+            background:
+              step === currentStep
+                ? "var(--primary)"
+                : step < currentStep
+                  ? "var(--primary)"
+                  : "var(--border)",
           }}
         />
       ))}
     </div>
-  )
+  );
 }
 
 function Step1({ onNext }: { onNext: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 px-6 py-10 max-w-[640px] mx-auto text-center">
+    <div className="flex flex-col items-center justify-center flex-1 px-6 py-10 max-w-160 mx-auto text-center">
       <div
-        className="size-[120px] rounded-full flex items-center justify-center mb-8"
-        style={{ background: 'oklch(58% 0.16 35 / 0.1)', border: '2px solid var(--primary)' }}
+        className="size-30 rounded-full flex items-center justify-center mb-8"
+        style={{
+          background: "oklch(58% 0.16 35 / 0.1)",
+          border: "2px solid var(--primary)",
+        }}
       >
         <Layers className="size-12 text-primary" />
       </div>
@@ -56,21 +66,31 @@ function Step1({ onNext }: { onNext: () => void }) {
         Get Started
       </Button>
     </div>
-  )
+  );
 }
 
-function Step2({ onNext }: { onNext: () => void }) {
-  const [name, setName] = useState('My Blog')
-  const [domain, setDomain] = useState('my-blog.com')
+function Step2({ onNext }: { onNext: (site: SiteResponse) => void }) {
+  const [name, setName] = useState("My Blog");
+  const [domain, setDomain] = useState("my-blog.com");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name || !domain) return
-    onNext()
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !domain) return;
+    setIsLoading(true);
+    try {
+      const site = await sitesApi.create(name, domain);
+      toast.success("Site created successfully");
+      onNext(site);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create site");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-stretch justify-center flex-1 px-6 py-10 max-w-[640px] mx-auto">
+    <div className="flex flex-col items-stretch justify-center flex-1 px-6 py-10 max-w-160 mx-auto">
       <h2 className="font-display text-[32px] mb-4 text-center">Create your site</h2>
       <p className="text-base text-muted-foreground leading-relaxed mb-8 text-center">
         Give it a name and tell us the domain.
@@ -96,49 +116,49 @@ function Step2({ onNext }: { onNext: () => void }) {
             className="bg-background border-border"
           />
         </div>
-        <Button type="submit" className="w-full mt-4">
-          Create Site
+        <Button type="submit" className="w-full mt-4" disabled={isLoading}>
+          {isLoading ? "Creating..." : "Create Site"}
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
-function Step3({ onNext }: { onNext: () => void }) {
-  const [copiedSnippet, setCopiedSnippet] = useState(false)
-  const [copiedInstall, setCopiedInstall] = useState(false)
-  const [packageManager, setPackageManager] = useState<'npm' | 'pnpm' | 'yarn' | 'bun'>('npm')
+function Step3({ site, onNext }: { site: SiteResponse; onNext: () => void }) {
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const [copiedInstall, setCopiedInstall] = useState(false);
+  const [packageManager, setPackageManager] = useState<"npm" | "pnpm" | "yarn" | "bun">("npm");
 
   const installCommands = {
-    npm: 'npm install tanilytics',
-    pnpm: 'pnpm add tanilytics',
-    yarn: 'yarn add tanilytics',
-    bun: 'bun add tanilytics',
-  }
+    npm: "npm install tanilytics",
+    pnpm: "pnpm add tanilytics",
+    yarn: "yarn add tanilytics",
+    bun: "bun add tanilytics",
+  };
 
   const codeSnippet = `import tanilytics from 'tanilytics';
 
-tanilytics.init({
-  siteToken: 'sk_live_abc12345',
-  endpoint: 'https://ingest.example.com/api/v1/events',
-});`
+  tanilytics.init({
+    siteToken: '${site.apiKey}',
+    endpoint: 'https://ingest.example.com/api/v1/events',
+  });`;
 
   const copySnippet = () => {
-    navigator.clipboard.writeText(codeSnippet)
-    setCopiedSnippet(true)
-    setTimeout(() => setCopiedSnippet(false), 2000)
-    toast.success('Snippet copied')
-  }
+    navigator.clipboard.writeText(codeSnippet);
+    setCopiedSnippet(true);
+    setTimeout(() => setCopiedSnippet(false), 2000);
+    toast.success("Snippet copied");
+  };
 
   const copyInstall = () => {
-    navigator.clipboard.writeText(installCommands[packageManager])
-    setCopiedInstall(true)
-    setTimeout(() => setCopiedInstall(false), 2000)
-    toast.success('Install command copied')
-  }
+    navigator.clipboard.writeText(installCommands[packageManager]);
+    setCopiedInstall(true);
+    setTimeout(() => setCopiedInstall(false), 2000);
+    toast.success("Install command copied");
+  };
 
   return (
-    <div className="flex flex-col items-stretch justify-center flex-1 px-6 py-10 max-w-[720px] mx-auto">
+    <div className="flex flex-col items-stretch justify-center flex-1 px-6 py-10 max-w-180 mx-auto">
       <h2 className="font-display text-[32px] mb-4 text-center">Add this to your site</h2>
       <p className="text-base text-muted-foreground leading-relaxed mb-8 text-center">
         Add this snippet to each page where you want to track events.
@@ -157,15 +177,15 @@ tanilytics.init({
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Install</span>
             <div className="flex items-center gap-1 bg-background border border-border rounded-md p-0.5">
-              {(['npm', 'pnpm', 'yarn', 'bun'] as const).map((pm) => (
+              {(["npm", "pnpm", "yarn", "bun"] as const).map((pm) => (
                 <button
                   key={pm}
                   onClick={() => setPackageManager(pm)}
                   className={cn(
-                    'px-2 py-1 text-xs rounded-sm transition-colors',
+                    "px-2 py-1 text-xs rounded-sm transition-colors",
                     packageManager === pm
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {pm}
@@ -184,15 +204,17 @@ tanilytics.init({
               className="absolute top-2 right-2 border-border"
             >
               {copiedInstall ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-              {copiedInstall ? 'Copied' : 'Copy'}
+              {copiedInstall ? "Copied" : "Copy"}
             </Button>
           </div>
 
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-muted-foreground uppercase tracking-wider">Tracking snippet</span>
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+              Tracking snippet
+            </span>
             <Button variant="outline" size="sm" onClick={copySnippet} className="border-border">
               {copiedSnippet ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-              {copiedSnippet ? 'Copied' : 'Copy'}
+              {copiedSnippet ? "Copied" : "Copy"}
             </Button>
           </div>
           <pre className="bg-[oklch(10%_0.01_60)] border border-border rounded-lg p-4 font-mono text-[13px] overflow-x-auto text-foreground">
@@ -205,15 +227,18 @@ tanilytics.init({
         I've installed it
       </Button>
     </div>
-  )
+  );
 }
 
 function Step4() {
   return (
-    <div className="flex flex-col items-center justify-center flex-1 px-6 py-10 max-w-[640px] mx-auto text-center">
+    <div className="flex flex-col items-center justify-center flex-1 px-6 py-10 max-w-160 mx-auto text-center">
       <div
-        className="size-[120px] rounded-full flex items-center justify-center mb-8"
-        style={{ background: 'oklch(65% 0.14 145 / 0.1)', border: '2px solid oklch(65% 0.14 145)' }}
+        className="size-30 rounded-full flex items-center justify-center mb-8"
+        style={{
+          background: "oklch(65% 0.14 145 / 0.1)",
+          border: "2px solid oklch(65% 0.14 145)",
+        }}
       >
         <Check className="size-12 text-[oklch(65%_0.14_145)]" />
       </div>
@@ -227,19 +252,20 @@ function Step4() {
         </Button>
       </Link>
     </div>
-  )
+  );
 }
 
 function OnboardingPage() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
+  const [site, setSite] = useState<SiteResponse | null>(null);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <StepIndicator currentStep={step} />
       {step === 1 && <Step1 onNext={() => setStep(2)} />}
-      {step === 2 && <Step2 onNext={() => setStep(3)} />}
-      {step === 3 && <Step3 onNext={() => setStep(4)} />}
+      {step === 2 && <Step2 onNext={(s) => { setSite(s); setStep(3); }} />}
+      {step === 3 && site && <Step3 site={site} onNext={() => setStep(4)} />}
       {step === 4 && <Step4 />}
     </div>
-  )
+  );
 }

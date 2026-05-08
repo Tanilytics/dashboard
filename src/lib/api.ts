@@ -24,8 +24,19 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   })
 
   if (!res.ok) {
-    const error = new Error(`HTTP ${res.status}: ${res.statusText}`)
+    let body: any
+    try {
+      body = await res.json()
+    } catch {
+      body = undefined
+    }
+    const message = body?.detail || `HTTP ${res.status}: ${res.statusText}`
+    const error = new Error(message)
     ;(error as any).status = res.status
+    ;(error as any).detail = body?.detail
+    ;(error as any).title = body?.title
+    ;(error as any).type = body?.type
+    ;(error as any).instance = body?.instance
     throw error
   }
 

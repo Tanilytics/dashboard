@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -7,15 +7,7 @@ import { Card, CardContent } from "#/components/ui/card";
 import { useAuth } from "#/hooks/use-auth";
 import { authApi } from "#/lib/api";
 import { toast } from "sonner";
-
-function redirectIfAuth() {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      throw redirect({ to: '/dashboard' })
-    }
-  }
-}
+import { redirectIfAuth } from "#/lib/auth-guards";
 
 export const Route = createFileRoute("/register")({
   component: RegisterPage,
@@ -55,6 +47,7 @@ function PasswordStrength({ password }: { password: string }) {
 }
 
 function RegisterPage() {
+  const navigate = useNavigate();
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -71,11 +64,14 @@ function RegisterPage() {
 
     try {
       const user = await authApi.register(email, password);
+      const tokens = await authApi.login(email, password);
+      localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
       setUser(user);
       toast.success("Account created");
-      window.location.href = "/onboarding";
+      navigate({ to: "/onboarding" });
     } catch (err: any) {
-      toast.error(err.message || "Failed to create account");
+      toast.error(err.detail || err.message || "Failed to create account");
     } finally {
       setIsLoading(false);
     }
