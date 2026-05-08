@@ -9,16 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
-import { Route as DemoTableRouteImport } from './routes/demo/table'
-import { Route as ApiResumeChatRouteImport } from './routes/api.resume-chat'
-import { Route as DemoSentryTestingRouteImport } from './routes/demo/sentry.testing'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardRealtimeRouteImport } from './routes/dashboard.realtime'
+import { Route as DashboardPagesRouteImport } from './routes/dashboard.pages'
+import { Route as DashboardMediaRouteImport } from './routes/dashboard.media'
+import { Route as DashboardHeatmapsRouteImport } from './routes/dashboard.heatmaps'
+import { Route as DashboardFunnelsRouteImport } from './routes/dashboard.funnels'
+import { Route as DashboardAcquisitionRouteImport } from './routes/dashboard.acquisition'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -26,95 +48,175 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const DemoTableRoute = DemoTableRouteImport.update({
-  id: '/demo/table',
-  path: '/demo/table',
-  getParentRoute: () => rootRouteImport,
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const ApiResumeChatRoute = ApiResumeChatRouteImport.update({
-  id: '/api/resume-chat',
-  path: '/api/resume-chat',
-  getParentRoute: () => rootRouteImport,
+const DashboardRealtimeRoute = DashboardRealtimeRouteImport.update({
+  id: '/realtime',
+  path: '/realtime',
+  getParentRoute: () => DashboardRoute,
 } as any)
-const DemoSentryTestingRoute = DemoSentryTestingRouteImport.update({
-  id: '/demo/sentry/testing',
-  path: '/demo/sentry/testing',
-  getParentRoute: () => rootRouteImport,
+const DashboardPagesRoute = DashboardPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardMediaRoute = DashboardMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardHeatmapsRoute = DashboardHeatmapsRouteImport.update({
+  id: '/heatmaps',
+  path: '/heatmaps',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardFunnelsRoute = DashboardFunnelsRouteImport.update({
+  id: '/funnels',
+  path: '/funnels',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAcquisitionRoute = DashboardAcquisitionRouteImport.update({
+  id: '/acquisition',
+  path: '/acquisition',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/api/resume-chat': typeof ApiResumeChatRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/dashboard/acquisition': typeof DashboardAcquisitionRoute
+  '/dashboard/funnels': typeof DashboardFunnelsRoute
+  '/dashboard/heatmaps': typeof DashboardHeatmapsRoute
+  '/dashboard/media': typeof DashboardMediaRoute
+  '/dashboard/pages': typeof DashboardPagesRoute
+  '/dashboard/realtime': typeof DashboardRealtimeRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/api/resume-chat': typeof ApiResumeChatRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/dashboard/acquisition': typeof DashboardAcquisitionRoute
+  '/dashboard/funnels': typeof DashboardFunnelsRoute
+  '/dashboard/heatmaps': typeof DashboardHeatmapsRoute
+  '/dashboard/media': typeof DashboardMediaRoute
+  '/dashboard/pages': typeof DashboardPagesRoute
+  '/dashboard/realtime': typeof DashboardRealtimeRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/api/resume-chat': typeof ApiResumeChatRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/demo/sentry/testing': typeof DemoSentryTestingRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/dashboard/acquisition': typeof DashboardAcquisitionRoute
+  '/dashboard/funnels': typeof DashboardFunnelsRoute
+  '/dashboard/heatmaps': typeof DashboardHeatmapsRoute
+  '/dashboard/media': typeof DashboardMediaRoute
+  '/dashboard/pages': typeof DashboardPagesRoute
+  '/dashboard/realtime': typeof DashboardRealtimeRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
-    | '/api/resume-chat'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/demo/sentry/testing'
+    | '/dashboard'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/dashboard/acquisition'
+    | '/dashboard/funnels'
+    | '/dashboard/heatmaps'
+    | '/dashboard/media'
+    | '/dashboard/pages'
+    | '/dashboard/realtime'
+    | '/dashboard/settings'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
-    | '/api/resume-chat'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/demo/sentry/testing'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/dashboard/acquisition'
+    | '/dashboard/funnels'
+    | '/dashboard/heatmaps'
+    | '/dashboard/media'
+    | '/dashboard/pages'
+    | '/dashboard/realtime'
+    | '/dashboard/settings'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/about'
-    | '/api/resume-chat'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/demo/sentry/testing'
+    | '/dashboard'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/dashboard/acquisition'
+    | '/dashboard/funnels'
+    | '/dashboard/heatmaps'
+    | '/dashboard/media'
+    | '/dashboard/pages'
+    | '/dashboard/realtime'
+    | '/dashboard/settings'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  ApiResumeChatRoute: typeof ApiResumeChatRoute
-  DemoTableRoute: typeof DemoTableRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  DemoSentryTestingRoute: typeof DemoSentryTestingRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -124,44 +226,97 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/demo/table': {
-      id: '/demo/table'
-      path: '/demo/table'
-      fullPath: '/demo/table'
-      preLoaderRoute: typeof DemoTableRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/api/resume-chat': {
-      id: '/api/resume-chat'
-      path: '/api/resume-chat'
-      fullPath: '/api/resume-chat'
-      preLoaderRoute: typeof ApiResumeChatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/realtime': {
+      id: '/dashboard/realtime'
+      path: '/realtime'
+      fullPath: '/dashboard/realtime'
+      preLoaderRoute: typeof DashboardRealtimeRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/demo/sentry/testing': {
-      id: '/demo/sentry/testing'
-      path: '/demo/sentry/testing'
-      fullPath: '/demo/sentry/testing'
-      preLoaderRoute: typeof DemoSentryTestingRouteImport
-      parentRoute: typeof rootRouteImport
+    '/dashboard/pages': {
+      id: '/dashboard/pages'
+      path: '/pages'
+      fullPath: '/dashboard/pages'
+      preLoaderRoute: typeof DashboardPagesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/media': {
+      id: '/dashboard/media'
+      path: '/media'
+      fullPath: '/dashboard/media'
+      preLoaderRoute: typeof DashboardMediaRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/heatmaps': {
+      id: '/dashboard/heatmaps'
+      path: '/heatmaps'
+      fullPath: '/dashboard/heatmaps'
+      preLoaderRoute: typeof DashboardHeatmapsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/funnels': {
+      id: '/dashboard/funnels'
+      path: '/funnels'
+      fullPath: '/dashboard/funnels'
+      preLoaderRoute: typeof DashboardFunnelsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/acquisition': {
+      id: '/dashboard/acquisition'
+      path: '/acquisition'
+      fullPath: '/dashboard/acquisition'
+      preLoaderRoute: typeof DashboardAcquisitionRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardAcquisitionRoute: typeof DashboardAcquisitionRoute
+  DashboardFunnelsRoute: typeof DashboardFunnelsRoute
+  DashboardHeatmapsRoute: typeof DashboardHeatmapsRoute
+  DashboardMediaRoute: typeof DashboardMediaRoute
+  DashboardPagesRoute: typeof DashboardPagesRoute
+  DashboardRealtimeRoute: typeof DashboardRealtimeRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAcquisitionRoute: DashboardAcquisitionRoute,
+  DashboardFunnelsRoute: DashboardFunnelsRoute,
+  DashboardHeatmapsRoute: DashboardHeatmapsRoute,
+  DashboardMediaRoute: DashboardMediaRoute,
+  DashboardPagesRoute: DashboardPagesRoute,
+  DashboardRealtimeRoute: DashboardRealtimeRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  ApiResumeChatRoute: ApiResumeChatRoute,
-  DemoTableRoute: DemoTableRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  DemoSentryTestingRoute: DemoSentryTestingRoute,
+  DashboardRoute: DashboardRouteWithChildren,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

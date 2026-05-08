@@ -14,6 +14,27 @@ export const env = createEnv({
 
   client: {
     VITE_APP_TITLE: z.string().min(1).optional(),
+
+    // Auth API endpoints (localhost:8082)
+    VITE_API_AUTH_LOGIN_URL: z.string().url().optional(),
+    VITE_API_AUTH_REGISTER_URL: z.string().url().optional(),
+    VITE_API_AUTH_REFRESH_URL: z.string().url().optional(),
+
+    // Sites API endpoints (localhost:8081)
+    VITE_API_SITES_LIST_URL: z.string().url().optional(),
+    VITE_API_SITES_CREATE_URL: z.string().url().optional(),
+    VITE_API_SITES_SETTINGS_URL: z.string().url().optional(),
+    VITE_API_SITES_API_KEY_ROTATE_URL: z.string().url().optional(),
+    VITE_API_SITES_MEMBERS_URL: z.string().url().optional(),
+
+    // Analytics API endpoints (localhost:8081)
+    VITE_API_ANALYTICS_REALTIME_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_AGGREGATE_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_TIMESERIES_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_PAGES_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_REFERRERS_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_MEDIA_URL: z.string().url().optional(),
+    VITE_API_ANALYTICS_STREAM_URL: z.string().url().optional(),
   },
 
   /**
