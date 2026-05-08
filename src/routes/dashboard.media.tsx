@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#/components/ui/card";
 import { Skeleton } from "#/components/ui/skeleton";
 import { PlayCircle, Headphones } from "lucide-react";
 import { useAuth } from "#/hooks/use-auth";
-import { useMedia, getLast7Days } from "#/lib/queries";
+import { useMedia, getDateRange } from "#/lib/queries";
 
 function CompletionBar({ rate }: { rate: number }) {
   const color =
@@ -24,8 +24,8 @@ export const Route = createFileRoute("/dashboard/media")({
 });
 
 function MediaPage() {
-  const { currentSiteId } = useAuth();
-  const { from, to } = getLast7Days();
+  const { currentSiteId, dateRange } = useAuth();
+  const { from, to } = getDateRange(dateRange);
   const { data, isLoading } = useMedia(currentSiteId, from, to, 50);
 
   return (

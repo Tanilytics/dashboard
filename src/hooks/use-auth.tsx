@@ -8,6 +8,7 @@ export const userAtom = atom<UserResponse | null>(null);
 export const sitesAtom = atom<SiteResponse[]>([]);
 export const currentSiteIdAtom = atom<string | null>(null);
 export const isLoadingAtom = atom(false);
+export const dateRangeAtom = atom<string>("7d");
 
 const logoutAtom = atom(null, (_get, set) => {
 	set(userAtom, null);
@@ -24,6 +25,7 @@ export function useAuth() {
 	const [user, setUser] = useAtom(userAtom);
 	const [sites, setSites] = useAtom(sitesAtom);
 	const [currentSiteId, setCurrentSiteId] = useAtom(currentSiteIdAtom);
+	const [dateRange, setDateRange] = useAtom(dateRangeAtom);
 	const isLoading = useAtomValue(isLoadingAtom);
 	const clearAuth = useSetAtom(logoutAtom);
 
@@ -56,10 +58,12 @@ export function useAuth() {
 		user,
 		sites,
 		currentSiteId,
+		dateRange,
 		isLoading: isLoading || userQuery.isLoading || sitesQuery.isLoading,
 		setUser,
 		setSites,
 		setCurrentSiteId,
+		setDateRange,
 		logout,
 	};
 }

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Skeleton } from '#/components/ui/skeleton'
 import { useAuth } from '#/hooks/use-auth'
-import { usePages, getLast7Days } from '#/lib/queries'
+import { usePages, getDateRange } from '#/lib/queries'
 
 export const Route = createFileRoute('/dashboard/pages')({
   component: PagesPage,
@@ -17,8 +17,8 @@ function formatTime(seconds: number) {
 }
 
 function PagesPage() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = usePages(currentSiteId, from, to, 50)
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<'views' | 'uniqueVisitors' | 'uniqueSessions' | 'avgTimeOnPageSeconds'>('views')

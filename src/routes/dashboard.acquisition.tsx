@@ -3,15 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Skeleton } from '#/components/ui/skeleton'
 import { TrendingUp, PieChart } from 'lucide-react'
 import { useAuth } from '#/hooks/use-auth'
-import { useReferrers, getLast7Days } from '#/lib/queries'
+import { useReferrers, getDateRange } from '#/lib/queries'
 
 export const Route = createFileRoute('/dashboard/acquisition')({
   component: AcquisitionPage,
 })
 
 function AcquisitionPage() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = useReferrers(currentSiteId, from, to, 50)
 
   return (

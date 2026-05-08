@@ -20,7 +20,7 @@ import {
   usePages,
   useReferrers,
   useMedia,
-  getLast7Days,
+  getDateRange,
 } from '#/lib/queries'
 
 function LivePulseBar() {
@@ -113,8 +113,8 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 function MainChart() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = useTimeseries(currentSiteId, from, to)
 
   if (isLoading) {
@@ -199,8 +199,8 @@ function MainChart() {
 }
 
 function TopPagesTable() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = usePages(currentSiteId, from, to, 5)
 
   return (
@@ -254,8 +254,8 @@ function TopPagesTable() {
 }
 
 function TopReferrersTable() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = useReferrers(currentSiteId, from, to, 5)
 
   return (
@@ -323,8 +323,8 @@ function RingProgress({ value, size = 36 }: { value: number; size?: number }) {
 }
 
 function MediaOverview() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data, isLoading } = useMedia(currentSiteId, from, to, 3)
 
   return (
@@ -371,8 +371,8 @@ function MediaOverview() {
 }
 
 function OverviewPage() {
-  const { currentSiteId } = useAuth()
-  const { from, to } = getLast7Days()
+  const { currentSiteId, dateRange } = useAuth()
+  const { from, to } = getDateRange(dateRange)
   const { data: aggregate, isLoading } = useAggregate(currentSiteId, from, to)
 
   const formatDuration = (seconds: number) => {

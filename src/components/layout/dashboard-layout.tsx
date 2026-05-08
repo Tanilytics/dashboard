@@ -57,7 +57,8 @@ const dateRangeOptions = [
 
 function DateRangeDropdown() {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(dateRangeOptions[1]);
+  const { dateRange, setDateRange } = useAuth();
+  const selected = dateRangeOptions.find((o) => o.value === dateRange) ?? dateRangeOptions[1];
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -88,7 +89,7 @@ function DateRangeDropdown() {
           <DropdownMenuItem
             key={option.value}
             onClick={() => {
-              setSelected(option);
+              setDateRange(option.value);
               setOpen(false);
             }}
             className="cursor-pointer focus:bg-[oklch(28%_0.015_60_/_0.5)]"

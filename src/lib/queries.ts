@@ -13,6 +13,28 @@ export function getLast30Days(): { from: string; to: string } {
   return { from, to }
 }
 
+export function getDateRange(range: string): { from: string; to: string } {
+  const to = new Date().toISOString()
+  const now = Date.now()
+  let ms = 7 * 24 * 60 * 60 * 1000
+  switch (range) {
+    case '24h':
+      ms = 24 * 60 * 60 * 1000
+      break
+    case '7d':
+      ms = 7 * 24 * 60 * 60 * 1000
+      break
+    case '30d':
+      ms = 30 * 24 * 60 * 60 * 1000
+      break
+    case '90d':
+      ms = 90 * 24 * 60 * 60 * 1000
+      break
+  }
+  const from = new Date(now - ms).toISOString()
+  return { from, to }
+}
+
 // Auth
 export function useUser() {
   return useQuery({
