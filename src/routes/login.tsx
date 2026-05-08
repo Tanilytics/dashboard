@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
@@ -25,6 +26,7 @@ function TanilyticsLogo({ className }: { className?: string }) {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,6 +47,8 @@ function LoginPage() {
         role: "admin",
         createdAt: new Date().toISOString(),
       });
+      qc.invalidateQueries({ queryKey: ['auth', 'user'] });
+      qc.invalidateQueries({ queryKey: ['sites'] });
 
       toast.success("Signed in successfully");
       navigate({ to: "/dashboard" });

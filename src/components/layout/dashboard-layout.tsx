@@ -1,24 +1,21 @@
-import { useState } from "react";
-import { Link, useRouterState, Outlet } from "@tanstack/react-router";
-import { useAuth } from "#/hooks/use-auth";
-import { cn } from "#/lib/utils";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard,
   Activity,
+  ChevronDown,
+  CircleDot,
   FileText,
-  PlayCircle,
-  TrendingUp,
   Filter,
   Flame,
-  Settings,
-  ChevronDown,
+  LayoutDashboard,
   LogOut,
   Menu,
-  PanelLeftClose,
   PanelLeft,
-  CircleDot,
+  PanelLeftClose,
+  PlayCircle,
+  Settings,
+  TrendingUp,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "#/components/ui/sheet";
+import { useState } from "react";
 import { Avatar, AvatarFallback } from "#/components/ui/avatar";
 import {
   DropdownMenu,
@@ -26,8 +23,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "#/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "#/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "#/components/ui/tooltip";
+import { useAuth } from "#/hooks/use-auth";
 import TanStackQueryDevtools from "#/integrations/tanstack-query/devtools";
+import { cn } from "#/lib/utils";
 
 const navItems = [
   { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -48,96 +48,53 @@ function TanilyticsLogo({ className }: { className?: string }) {
   );
 }
 
-function SiteSwitcher() {
-  const { sites, currentSiteId, setCurrentSiteId } = useAuth();
-  const currentSite = sites.find((s) => s.id === currentSiteId);
+const dateRangeOptions = [
+  { label: "Last 24 hours", value: "24h" },
+  { label: "Last 7 days", value: "7d" },
+  { label: "Last 30 days", value: "30d" },
+  { label: "Last 90 days", value: "90d" },
+];
+
+function DateRangeDropdown() {
   const [open, setOpen] = useState(false);
-
-  if (sites.length === 0) {
-    return (
-      <Link
-        to="/onboarding"
-        className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-accent transition-colors"
-      >
-        <CircleDot className="size-4" />
-        <span>Create Site</span>
-      </Link>
-    );
-  }
-
-  if (sites.length === 1) {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground">
-        <div
-          className="flex size-7 items-center justify-center rounded-md text-xs font-bold"
-          style={{
-            background: "oklch(58% 0.16 35 / 0.15)",
-            color: "var(--primary)",
-          }}
-        >
-          {currentSite?.name.charAt(0).toUpperCase() || "?"}
-        </div>
-        <span className="truncate">{currentSite?.name}</span>
-      </div>
-    );
-  }
+  const [selected, setSelected] = useState(dateRangeOptions[1]);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-left text-xs transition-colors hover:border-[oklch(40%_0.02_60)] hover:bg-[oklch(24%_0.018_60)] focus:outline-none focus:ring-2 focus:ring-ring">
-        <div className="flex items-center gap-2 min-w-0">
-          <div
-            className="flex size-7 items-center justify-center rounded-md text-xs font-bold shrink-0"
-            style={{
-              background: "oklch(58% 0.16 35 / 0.15)",
-              color: "var(--primary)",
-            }}
-          >
-            {currentSite?.name.charAt(0).toUpperCase() || "?"}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="truncate text-sm font-medium">{currentSite?.name}</span>
-            <span className="truncate text-[11px] text-muted-foreground">
-              {currentSite?.domain}
-            </span>
-          </div>
-        </div>
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-1.5 text-[13px] text-muted-foreground transition-colors hover:border-[oklch(40%_0.02_60)] hover:bg-[oklch(24%_0.018_60)] focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        <span>{selected.label}</span>
         <ChevronDown
-          className="size-3.5 shrink-0 text-muted-foreground transition-transform"
+          className="size-3 shrink-0 transition-transform"
           style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="start"
-        className="w-[--radix-dropdown-menu-trigger-width] bg-card border-border"
-      >
-        <div className="px-2 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Your sites
-        </div>
-        {sites.map((site) => (
+      <DropdownMenuContent align="end" className="w-44 bg-card border-border">
+        {dateRangeOptions.map((option) => (
           <DropdownMenuItem
-            key={site.id}
+            key={option.value}
             onClick={() => {
-              setCurrentSiteId(site.id);
+              setSelected(option);
               setOpen(false);
             }}
-            className="flex items-center gap-2 cursor-pointer focus:bg-[oklch(28%_0.015_60_/_0.5)]"
+            className="cursor-pointer focus:bg-[oklch(28%_0.015_60_/_0.5)]"
           >
-            <div
-              className="flex size-7 items-center justify-center rounded-md text-xs font-bold shrink-0"
-              style={{
-                background:
-                  site.id === currentSiteId ? "oklch(58% 0.16 35 / 0.15)" : "oklch(28% 0.015 60)",
-                color: site.id === currentSiteId ? "var(--primary)" : "var(--muted-foreground)",
-              }}
-            >
-              {site.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="truncate text-sm">{site.name}</span>
-              <span className="truncate text-[11px] text-muted-foreground">{site.domain}</span>
-            </div>
-            {site.id === currentSiteId && (
+            <span className="text-sm">{option.label}</span>
+            {selected.value === option.value && (
               <svg
                 className="ml-auto size-3.5 shrink-0"
                 viewBox="0 0 24 24"
@@ -152,34 +109,190 @@ function SiteSwitcher() {
             )}
           </DropdownMenuItem>
         ))}
-        <div className="h-px bg-border mx-2 my-1" />
-        <DropdownMenuItem asChild className="cursor-pointer focus:bg-[oklch(28%_0.015_60_/_0.5)]">
-          <Link to="/onboarding" className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-md text-xs font-bold border border-dashed border-border text-muted-foreground">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </div>
-            <span className="text-sm text-muted-foreground">Create new site</span>
-          </Link>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function SidebarNav({ collapsed }: { collapsed: boolean }) {
-  const { currentSiteId } = useAuth();
+function SiteSwitcher({ collapsed }: { collapsed: boolean }) {
+  const { sites, currentSiteId, setCurrentSiteId } = useAuth();
+  const navigate = useNavigate();
+  const currentSite = sites.find((s) => s.id === currentSiteId);
+  const [open, setOpen] = useState(false);
+
+  if (sites.length === 0) {
+    return (
+      <Link
+        to="/onboarding"
+        className={cn(
+          "flex items-center gap-2 rounded-lg border border-border text-xs text-muted-foreground hover:bg-accent transition-colors",
+          collapsed ? "justify-center p-2" : "px-3 py-2",
+        )}
+      >
+        <CircleDot className="size-4 shrink-0" />
+        {!collapsed && <span>Create Site</span>}
+      </Link>
+    );
+  }
+
+  if (sites.length === 1) {
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-2 rounded-lg border border-border text-xs text-muted-foreground",
+          collapsed ? "justify-center p-2" : "px-3 py-2",
+        )}
+      >
+        <div
+          className="flex size-7 items-center justify-center rounded-[7px] text-xs font-bold shrink-0"
+          style={{
+            background: "oklch(58% 0.16 35 / 0.15)",
+            color: "var(--primary)",
+          }}
+        >
+          {currentSite?.name.charAt(0).toUpperCase() || "?"}
+        </div>
+        {!collapsed && <span className="truncate">{currentSite?.name}</span>}
+      </div>
+    );
+  }
+
+  const siteColors = [
+    { bg: "oklch(58% 0.16 35 / 0.15)", fg: "var(--primary)" },
+    { bg: "oklch(55% 0.12 250 / 0.2)", fg: "oklch(65% 0.14 250)" },
+    { bg: "oklch(58% 0.14 145 / 0.15)", fg: "oklch(65% 0.14 145)" },
+    { bg: "oklch(55% 0.12 300 / 0.2)", fg: "oklch(65% 0.14 300)" },
+    { bg: "oklch(58% 0.14 200 / 0.15)", fg: "oklch(65% 0.14 200)" },
+  ];
+  const getSiteColor = (siteId: string) => {
+    const idx = siteId.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % siteColors.length;
+    return siteColors[idx];
+  };
+
+  const currentColor = getSiteColor(currentSiteId || "");
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger
+        className={cn(
+          "flex w-full items-center rounded-lg border border-border bg-card transition-all hover:border-[oklch(40%_0.02_60)] hover:bg-[oklch(24%_0.018_60)] focus:outline-none data-[state=open]:border-primary data-[state=open]:shadow-[0_0_0_2px_oklch(58%_0.16_35_/_0.12)]",
+          collapsed ? "justify-center p-2" : "justify-between gap-2 px-[10px] py-2 text-left",
+        )}
+        title={collapsed ? currentSite?.name : undefined}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="flex size-7 items-center justify-center rounded-[7px] text-xs font-bold shrink-0"
+            style={{ background: currentColor.bg, color: currentColor.fg }}
+          >
+            {currentSite?.name.charAt(0).toUpperCase() || "?"}
+          </div>
+          {!collapsed && (
+            <div className="flex flex-col min-w-0">
+              <span className="truncate text-[13px] font-medium">{currentSite?.name}</span>
+              <span className="truncate text-[11px] text-muted-foreground">
+                {currentSite?.domain}
+              </span>
+            </div>
+          )}
+        </div>
+        {!collapsed && (
+          <ChevronDown
+            className="size-3.5 shrink-0 text-muted-foreground transition-transform"
+            style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          />
+        )}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="w-56 bg-card border-border rounded-xl p-2 shadow-md"
+      >
+        <div className="px-[10px] py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          Your sites
+        </div>
+        {sites.map((site) => {
+          const color = getSiteColor(site.id);
+          const isActive = site.id === currentSiteId;
+          return (
+            <button
+              key={site.id}
+              type="button"
+              onClick={() => {
+                setCurrentSiteId(site.id);
+                setOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center gap-3 px-[10px] py-2 rounded-md text-left transition-colors",
+                isActive
+                  ? "bg-[oklch(58%_0.16_35_/_0.08)]"
+                  : "hover:bg-[oklch(28%_0.015_60_/_0.5)]",
+              )}
+            >
+              <div
+                className="flex size-7 items-center justify-center rounded-[7px] text-xs font-bold shrink-0"
+                style={{ background: color.bg, color: color.fg }}
+              >
+                {site.name.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="truncate text-[13px] font-medium">{site.name}</span>
+                <span className="truncate text-[11px] text-muted-foreground">{site.domain}</span>
+              </div>
+              {isActive && (
+                <svg
+                  className="ml-auto size-3.5 shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--primary)"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          );
+        })}
+        <div className="h-px bg-border mx-2 my-1" />
+        <button
+          type="button"
+          onClick={() => {
+            navigate({ to: "/onboarding" });
+            setOpen(false);
+          }}
+          className="w-full flex items-center gap-3 px-[10px] py-2 rounded-md text-left transition-colors hover:bg-[oklch(28%_0.015_60_/_0.5)]"
+        >
+          <div
+            className="flex size-7 items-center justify-center rounded-[7px] text-xs font-bold"
+            style={{
+              background: "var(--border)",
+              color: "var(--muted-foreground)",
+              border: "1px dashed var(--border)",
+            }}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </div>
+          <span className="text-[13px] text-muted-foreground">Create new site</span>
+        </button>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function SidebarNav({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
@@ -188,31 +301,51 @@ function SidebarNav({ collapsed }: { collapsed: boolean }) {
       <nav className="flex-1 overflow-y-auto px-3 py-2">
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => {
-            const isActive = currentPath === item.to || currentPath.startsWith(`${item.to}/`);
-            const content = (
-              <Link
-                to={item.soon ? "#" : item.to}
-                params={{ siteId: currentSiteId || "" }}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
-                  isActive
-                    ? "bg-[oklch(58%_0.16_35_/_0.08)] text-primary border-l-[3px] border-primary pl-[9px]"
-                    : "text-muted-foreground hover:bg-[oklch(28%_0.015_60)] hover:text-foreground",
-                  item.soon && "opacity-50 italic",
-                )}
-                onClick={(e) => item.soon && e.preventDefault()}
-              >
-                <item.icon className="size-5 shrink-0" />
-                {!collapsed && (
-                  <>
-                    <span className="truncate">{item.label}</span>
-                    {item.soon && (
+            const isActive =
+              currentPath === item.to ||
+              (item.to !== "/dashboard" && currentPath.startsWith(`${item.to}/`));
+            const baseClass = cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors w-full text-left",
+              isActive
+                ? "bg-[oklch(58%_0.16_35_/_0.08)] text-primary border-l-[3px] border-primary pl-[9px]"
+                : "text-muted-foreground hover:bg-[oklch(28%_0.015_60)] hover:text-foreground",
+              item.soon && "opacity-50 italic",
+            );
+            const icon = <item.icon className="size-5 shrink-0" />;
+
+            if (item.soon) {
+              const soonContent = (
+                <button type="button" className={baseClass} onClick={(e) => e.preventDefault()}>
+                  {icon}
+                  {!collapsed && (
+                    <>
+                      <span className="truncate">{item.label}</span>
                       <span className="ml-auto rounded-full bg-border px-2 py-0.5 text-[11px] font-normal not-italic text-muted-foreground">
                         Soon
                       </span>
-                    )}
-                  </>
-                )}
+                    </>
+                  )}
+                </button>
+              );
+              if (collapsed) {
+                return (
+                  <li key={item.to}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>{soonContent}</TooltipTrigger>
+                      <TooltipContent side="right" className="bg-card border-border">
+                        {item.label} (Soon)
+                      </TooltipContent>
+                    </Tooltip>
+                  </li>
+                );
+              }
+              return <li key={item.to}>{soonContent}</li>;
+            }
+
+            const linkContent = (
+              <Link to={item.to} className={baseClass} onClick={onNavigate}>
+                {icon}
+                {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
 
@@ -220,17 +353,16 @@ function SidebarNav({ collapsed }: { collapsed: boolean }) {
               return (
                 <li key={item.to}>
                   <Tooltip>
-                    <TooltipTrigger asChild>{content}</TooltipTrigger>
+                    <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
                     <TooltipContent side="right" className="bg-card border-border">
                       {item.label}
-                      {item.soon && " (Soon)"}
                     </TooltipContent>
                   </Tooltip>
                 </li>
               );
             }
 
-            return <li key={item.to}>{content}</li>;
+            return <li key={item.to}>{linkContent}</li>;
           })}
         </ul>
       </nav>
@@ -275,7 +407,7 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
 
 export function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const { currentSiteId } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
@@ -306,11 +438,9 @@ export function DashboardLayout() {
           </Link>
         </div>
 
-        {!collapsed && (
-          <div className="px-4 pb-4">
-            <SiteSwitcher />
-          </div>
-        )}
+        <div className="px-4 pb-4">
+          <SiteSwitcher collapsed={collapsed} />
+        </div>
 
         <SidebarNav collapsed={collapsed} />
 
@@ -339,7 +469,7 @@ export function DashboardLayout() {
       </aside>
 
       {/* Mobile Sidebar (Sheet) */}
-      <Sheet>
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
           <button className="md:hidden fixed top-3 left-3 z-50 p-2 rounded-md bg-card border border-border">
             <Menu className="size-5" />
@@ -353,9 +483,9 @@ export function DashboardLayout() {
             </Link>
           </div>
           <div className="px-4 pb-4">
-            <SiteSwitcher />
+            <SiteSwitcher collapsed={false} />
           </div>
-          <SidebarNav collapsed={false} />
+          <SidebarNav collapsed={false} onNavigate={() => setMobileOpen(false)} />
           <div className="mt-auto">
             <Link
               to="/dashboard/settings"
@@ -382,27 +512,7 @@ export function DashboardLayout() {
             <h1 className="font-display text-[22px] font-semibold tracking-tight">{pageTitle}</h1>
           </div>
           <div className="flex items-center gap-4">
-            {showDateRange && (
-              <div className="flex items-center gap-2 rounded-lg border border-border px-3.5 py-1.5 text-[13px] text-muted-foreground">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span>Last 7 days</span>
-                <ChevronDown className="size-3" />
-              </div>
-            )}
+            {showDateRange && <DateRangeDropdown />}
             <button className="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors">
               <svg
                 width="18"

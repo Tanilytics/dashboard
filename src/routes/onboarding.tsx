@@ -1,5 +1,6 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
@@ -9,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 import { Copy, Check, Layers } from "lucide-react";
 import { cn } from "#/lib/utils";
 import { sitesApi } from "#/lib/api";
+import { useAuth } from "#/hooks/use-auth";
 import type { SiteResponse } from "#/types/api";
 
 function requireAuth() {
@@ -70,6 +72,8 @@ function Step1({ onNext }: { onNext: () => void }) {
 }
 
 function Step2({ onNext }: { onNext: (site: SiteResponse) => void }) {
+  const qc = useQueryClient();
+  const { setCurrentSiteId } = useAuth();
   const [name, setName] = useState("My Blog");
   const [domain, setDomain] = useState("my-blog.com");
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +84,8 @@ function Step2({ onNext }: { onNext: (site: SiteResponse) => void }) {
     setIsLoading(true);
     try {
       const site = await sitesApi.create(name, domain);
+      setCurrentSiteId(site.id);
+      qc.invalidateQueries({ queryKey: ['sites'] });
       toast.success("Site created successfully");
       onNext(site);
     } catch (err: any) {
@@ -139,7 +145,7 @@ function Step3({ site, onNext }: { site: SiteResponse; onNext: () => void }) {
   const codeSnippet = `import tanilytics from 'tanilytics';
 
   tanilytics.init({
-    siteToken: '${site.apiKey}',
+    siteId: '${site.id}',
     endpoint: 'https://ingest.example.com/api/v1/events',
   });`;
 

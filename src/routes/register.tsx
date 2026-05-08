@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
@@ -48,6 +49,7 @@ function PasswordStrength({ password }: { password: string }) {
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +70,8 @@ function RegisterPage() {
       localStorage.setItem("accessToken", tokens.accessToken);
       localStorage.setItem("refreshToken", tokens.refreshToken);
       setUser(user);
+      qc.invalidateQueries({ queryKey: ['auth', 'user'] });
+      qc.invalidateQueries({ queryKey: ['sites'] });
       toast.success("Account created");
       navigate({ to: "/onboarding" });
     } catch (err: any) {

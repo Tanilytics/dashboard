@@ -1,6 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Link } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Skeleton } from '#/components/ui/skeleton'
 import {
@@ -12,72 +11,21 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { ArrowUpRight, ArrowDownRight, PlayCircle } from 'lucide-react'
-
-// Demo data
-const timeseriesData = [
-  { bucket: '00:00', pageViews: 30, uniqueVisitors: 20 },
-  { bucket: '01:00', pageViews: 45, uniqueVisitors: 28 },
-  { bucket: '02:00', pageViews: 38, uniqueVisitors: 25 },
-  { bucket: '03:00', pageViews: 52, uniqueVisitors: 35 },
-  { bucket: '04:00', pageViews: 48, uniqueVisitors: 32 },
-  { bucket: '05:00', pageViews: 65, uniqueVisitors: 42 },
-  { bucket: '06:00', pageViews: 80, uniqueVisitors: 55 },
-  { bucket: '07:00', pageViews: 75, uniqueVisitors: 50 },
-  { bucket: '08:00', pageViews: 90, uniqueVisitors: 62 },
-  { bucket: '09:00', pageViews: 110, uniqueVisitors: 75 },
-  { bucket: '10:00', pageViews: 105, uniqueVisitors: 70 },
-  { bucket: '11:00', pageViews: 130, uniqueVisitors: 88 },
-  { bucket: '12:00', pageViews: 125, uniqueVisitors: 82 },
-  { bucket: '13:00', pageViews: 140, uniqueVisitors: 95 },
-  { bucket: '14:00', pageViews: 160, uniqueVisitors: 110 },
-  { bucket: '15:00', pageViews: 155, uniqueVisitors: 105 },
-  { bucket: '16:00', pageViews: 170, uniqueVisitors: 120 },
-  { bucket: '17:00', pageViews: 185, uniqueVisitors: 135 },
-  { bucket: '18:00', pageViews: 180, uniqueVisitors: 128 },
-  { bucket: '19:00', pageViews: 200, uniqueVisitors: 145 },
-  { bucket: '20:00', pageViews: 195, uniqueVisitors: 140 },
-  { bucket: '21:00', pageViews: 210, uniqueVisitors: 155 },
-  { bucket: '22:00', pageViews: 230, uniqueVisitors: 170 },
-  { bucket: '23:00', pageViews: 220, uniqueVisitors: 162 },
-]
-
-const topPages = [
-  { url: '/blog/hello-world', views: 3241, visitors: 2104 },
-  { url: '/about', views: 1892, visitors: 1560 },
-  { url: '/blog/design-systems', views: 1504, visitors: 1201 },
-  { url: '/podcast/ep-42', views: 987, visitors: 843 },
-  { url: '/video/tutorial-1', views: 654, visitors: 521 },
-]
-
-const topReferrers = [
-  { referrer: 'Google', visits: 4210, visitors: 3801 },
-  { referrer: 'Direct / None', visits: 2156, visitors: 1902 },
-  { referrer: 'Twitter / X', visits: 1043, visitors: 987 },
-  { referrer: 'Hacker News', visits: 892, visitors: 876 },
-  { referrer: 'GitHub', visits: 430, visitors: 401 },
-]
-
-const mediaItems = [
-  { url: '/video/tutorial-1', plays: 1204, completion: 78 },
-  { url: '/podcast/ep-42', plays: 892, completion: 64 },
-  { url: '/video/intro', plays: 654, completion: 45 },
-]
+import { PlayCircle } from 'lucide-react'
+import { useAuth } from '#/hooks/use-auth'
+import {
+  useRealtime,
+  useAggregate,
+  useTimeseries,
+  usePages,
+  useReferrers,
+  useMedia,
+  getLast7Days,
+} from '#/lib/queries'
 
 function LivePulseBar() {
-  const [live, setLive] = useState({ active: 12, pv: 143, uv: 89, media: 4 })
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLive((prev) => ({
-        active: prev.active + Math.floor(Math.random() * 3) - 1,
-        pv: prev.pv + Math.floor(Math.random() * 5),
-        uv: prev.uv + Math.floor(Math.random() * 3),
-        media: prev.media + Math.floor(Math.random() * 2) - 1,
-      }))
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [])
+  const { currentSiteId } = useAuth()
+  const { data } = useRealtime(currentSiteId)
 
   return (
     <Card className="mb-6 border-l-[3px] border-l-[oklch(65%_0.14_145)]">
@@ -88,19 +36,19 @@ function LivePulseBar() {
             <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-[oklch(65%_0.14_145)]">Live</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold leading-tight">{live.active}</span>
+            <span className="text-lg font-semibold leading-tight">{data?.activeUsers ?? 0}</span>
             <span className="text-xs text-muted-foreground">Active users</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold leading-tight">{live.pv}</span>
+            <span className="text-lg font-semibold leading-tight">{data?.pageViewsCurrentHour ?? 0}</span>
             <span className="text-xs text-muted-foreground">Views this hour</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold leading-tight">{live.uv}</span>
+            <span className="text-lg font-semibold leading-tight">{data?.uniqueVisitorsCurrentHour ?? 0}</span>
             <span className="text-xs text-muted-foreground">Visitors this hour</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-semibold leading-tight">{Math.max(0, live.media)}</span>
+            <span className="text-lg font-semibold leading-tight">{Math.max(0, data?.concurrentMediaViewers ?? 0)}</span>
             <span className="text-xs text-muted-foreground">Media viewers</span>
           </div>
         </div>
@@ -109,7 +57,7 @@ function LivePulseBar() {
   )
 }
 
-function KPICard({ label, value, delta, deltaType, delay }: { label: string; value: string; delta: string; deltaType: 'up' | 'down'; delay: number }) {
+function KPICard({ label, value, delay, isLoading }: { label: string; value: string; delay: number; isLoading?: boolean }) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), delay)
@@ -117,25 +65,19 @@ function KPICard({ label, value, delta, deltaType, delay }: { label: string; val
   }, [delay])
 
   return (
-    <Card className="relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg h-full">
       <CardContent className="p-6">
         <div className="text-xs uppercase tracking-[0.12em] text-muted-foreground mb-2">{label}</div>
-        <div
-          className="font-display font-semibold tracking-[-0.02em] leading-[1.1]"
-          style={{ fontSize: label === 'Page views' ? 'clamp(40px, 4vw, 64px)' : 'clamp(28px, 3vw, 40px)' }}
-        >
-          {mounted ? value : '0'}
-        </div>
-        <div
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold mt-2 ${
-            deltaType === 'up'
-              ? 'bg-[oklch(65%_0.14_145_/_0.12)] text-[oklch(70%_0.12_145)]'
-              : 'bg-[oklch(65%_0.18_25_/_0.12)] text-[oklch(70%_0.14_25)]'
-          }`}
-        >
-          {deltaType === 'up' ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
-          {delta}
-        </div>
+        {isLoading ? (
+          <Skeleton className="h-10 w-24" />
+        ) : (
+          <div
+            className="font-display font-semibold tracking-[-0.02em] leading-[1.1]"
+            style={{ fontSize: 'clamp(32px, 3.5vw, 48px)' }}
+          >
+            {mounted ? value : '0'}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -143,9 +85,23 @@ function KPICard({ label, value, delta, deltaType, delay }: { label: string; val
 
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload) return null
+  const formattedLabel = (() => {
+    try {
+      const d = new Date(label)
+      if (isNaN(d.getTime())) return label
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    } catch {
+      return label
+    }
+  })()
   return (
     <div className="bg-card border border-border rounded-lg px-3 py-2 shadow-lg">
-      <div className="text-[11px] text-muted-foreground mb-1">{label}</div>
+      <div className="text-[11px] text-muted-foreground mb-1">{formattedLabel}</div>
       {payload.map((entry: any, index: number) => (
         <div key={index} className="flex items-center gap-2 text-sm">
           <span className="size-2 rounded-full" style={{ background: entry.color }} />
@@ -157,6 +113,23 @@ function ChartTooltip({ active, payload, label }: any) {
 }
 
 function MainChart() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data, isLoading } = useTimeseries(currentSiteId, from, to)
+
+  if (isLoading) {
+    return (
+      <Card className="mb-6">
+        <CardHeader className="pb-2">
+          <CardTitle className="font-display text-xl font-semibold tracking-tight">Traffic overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[360px] w-full" />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4 pb-2">
@@ -174,7 +147,7 @@ function MainChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={360}>
-          <AreaChart data={timeseriesData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+          <AreaChart data={data || []} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="pvGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="oklch(58% 0.16 35)" stopOpacity={0.1} />
@@ -186,7 +159,22 @@ function MainChart() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
-            <XAxis dataKey="bucket" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="bucket"
+              stroke="var(--muted-foreground)"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => {
+                try {
+                  const d = new Date(value)
+                  if (isNaN(d.getTime())) return value
+                  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                } catch {
+                  return value
+                }
+              }}
+            />
             <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
             <RechartsTooltip content={<ChartTooltip />} />
             <Area
@@ -211,74 +199,100 @@ function MainChart() {
 }
 
 function TopPagesTable() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data, isLoading } = usePages(currentSiteId, from, to, 5)
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-display text-xl font-semibold tracking-tight">Top pages</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto border border-border rounded-xl">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium w-10">#</th>
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Page</th>
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Views</th>
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visitors</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topPages.map((page, i) => (
-                <tr key={page.url} className="border-b border-border last:border-0 hover:bg-[oklch(28%_0.015_60_/_0.4)] transition-colors">
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center justify-center size-5 rounded-full text-[11px] font-semibold ${
-                        i < 2 ? 'bg-primary text-primary-foreground' : 'bg-border text-muted-foreground'
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 truncate max-w-[200px]">{page.url}</td>
-                  <td className="px-4 py-3">{page.views.toLocaleString()}</td>
-                  <td className="px-4 py-3">{page.visitors.toLocaleString()}</td>
+        {isLoading ? (
+          <Skeleton className="h-[260px] w-full" />
+        ) : (
+          <div className="overflow-x-auto border border-border rounded-xl">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium w-10">#</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Page</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Views</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visitors</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {(data || []).map((page, i) => (
+                  <tr key={page.url} className="border-b border-border last:border-0 hover:bg-[oklch(28%_0.015_60_/_0.4)] transition-colors">
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center justify-center size-5 rounded-full text-[11px] font-semibold ${
+                          i < 2 ? 'bg-primary text-primary-foreground' : 'bg-border text-muted-foreground'
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 truncate max-w-[200px]">{page.url}</td>
+                    <td className="px-4 py-3">{page.views.toLocaleString()}</td>
+                    <td className="px-4 py-3">{page.uniqueVisitors.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {(!data || data.length === 0) && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No data yet</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
 }
 
 function TopReferrersTable() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data, isLoading } = useReferrers(currentSiteId, from, to, 5)
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="font-display text-xl font-semibold tracking-tight">Top referrers</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto border border-border rounded-xl">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Source</th>
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visits</th>
-                <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visitors</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topReferrers.map((ref) => (
-                <tr key={ref.referrer} className="border-b border-border last:border-0 hover:bg-[oklch(28%_0.015_60_/_0.4)] transition-colors">
-                  <td className="px-4 py-3">{ref.referrer}</td>
-                  <td className="px-4 py-3">{ref.visits.toLocaleString()}</td>
-                  <td className="px-4 py-3">{ref.visitors.toLocaleString()}</td>
+        {isLoading ? (
+          <Skeleton className="h-[260px] w-full" />
+        ) : (
+          <div className="overflow-x-auto border border-border rounded-xl">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Source</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visits</th>
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium">Visitors</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {(data || []).map((ref) => (
+                  <tr key={ref.referrer} className="border-b border-border last:border-0 hover:bg-[oklch(28%_0.015_60_/_0.4)] transition-colors">
+                    <td className="px-4 py-3">{ref.referrer}</td>
+                    <td className="px-4 py-3">{ref.visits.toLocaleString()}</td>
+                    <td className="px-4 py-3">{ref.uniqueVisitors.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {(!data || data.length === 0) && (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">No data yet</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -309,6 +323,10 @@ function RingProgress({ value, size = 36 }: { value: number; size?: number }) {
 }
 
 function MediaOverview() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data, isLoading } = useMedia(currentSiteId, from, to, 3)
+
   return (
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -318,52 +336,70 @@ function MediaOverview() {
         </Link>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5">
-          {mediaItems.map((item) => (
-            <div
-              key={item.url}
-              className="p-5 border border-border rounded-xl transition-all hover:border-[oklch(40%_0.02_60)]"
-            >
-              <div className="size-12 rounded-lg bg-muted flex items-center justify-center mb-3">
-                <PlayCircle className="size-6" />
+        {isLoading ? (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5">
+            {(data || []).map((item) => (
+              <div
+                key={item.mediaUrl}
+                className="p-5 border border-border rounded-xl transition-all hover:border-[oklch(40%_0.02_60)]"
+              >
+                <div className="size-12 rounded-lg bg-muted flex items-center justify-center mb-3">
+                  <PlayCircle className="size-6" />
+                </div>
+                <div className="text-sm font-semibold mb-0.5 truncate">{item.mediaUrl}</div>
+                <div className="text-xs text-muted-foreground mb-4">{item.plays.toLocaleString()} plays</div>
+                <div className="flex items-center gap-3">
+                  <RingProgress value={Math.round(item.avgCompletionRate * 100)} />
+                  <span className="text-xs text-muted-foreground">{Math.round(item.avgCompletionRate * 100)}% avg. completion</span>
+                </div>
               </div>
-              <div className="text-sm font-semibold mb-0.5 truncate">{item.url}</div>
-              <div className="text-xs text-muted-foreground mb-4">{item.plays.toLocaleString()} plays</div>
-              <div className="flex items-center gap-3">
-                <RingProgress value={item.completion} />
-                <span className="text-xs text-muted-foreground">{item.completion}% avg. completion</span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+            {(!data || data.length === 0) && (
+              <div className="text-muted-foreground text-sm col-span-full py-8 text-center">No media data yet</div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )
 }
 
 function OverviewPage() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data: aggregate, isLoading } = useAggregate(currentSiteId, from, to)
+
+  const formatDuration = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+    const s = Math.floor(seconds % 60)
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  }
+
   return (
     <div className="page-entrance">
       <LivePulseBar />
 
-      <div
-        className="grid gap-5 mb-6"
-        style={{ gridTemplateColumns: 'repeat(12, 1fr)' }}
-      >
-        <div className="col-span-4 max-xl:col-span-4 max-lg:col-span-6 max-md:col-span-12">
-          <KPICard label="Page views" value="12,847" delta="12.4%" deltaType="up" delay={100} />
+      <div className="grid grid-cols-5 gap-5 mb-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
+        <div>
+          <KPICard label="Page views" value={(aggregate?.pageViews ?? 0).toLocaleString()} delay={100} isLoading={isLoading} />
         </div>
-        <div className="col-span-2 max-xl:col-span-2 max-lg:col-span-4 max-md:col-span-6 max-sm:col-span-12">
-          <KPICard label="Unique visitors" value="8,231" delta="8.2%" deltaType="up" delay={200} />
+        <div>
+          <KPICard label="Unique visitors" value={(aggregate?.uniqueVisitors ?? 0).toLocaleString()} delay={200} isLoading={isLoading} />
         </div>
-        <div className="col-span-2 max-xl:col-span-2 max-lg:col-span-4 max-md:col-span-6 max-sm:col-span-12">
-          <KPICard label="Unique sessions" value="9,456" delta="5.1%" deltaType="up" delay={300} />
+        <div>
+          <KPICard label="Unique sessions" value={(aggregate?.uniqueSessions ?? 0).toLocaleString()} delay={300} isLoading={isLoading} />
         </div>
-        <div className="col-span-2 max-xl:col-span-2 max-lg:col-span-4 max-md:col-span-6 max-sm:col-span-12">
-          <KPICard label="Bounce rate" value="42%" delta="2.3%" deltaType="down" delay={400} />
+        <div>
+          <KPICard label="Bounce rate" value={`${Math.round((aggregate?.bounceRate ?? 0) * 100)}%`} delay={400} isLoading={isLoading} />
         </div>
-        <div className="col-span-2 max-xl:col-span-2 max-lg:col-span-4 max-md:col-span-6 max-sm:col-span-12">
-          <KPICard label="Avg. session" value="02:34" delta="4.5%" deltaType="up" delay={500} />
+        <div>
+          <KPICard label="Avg. session" value={formatDuration(aggregate?.avgSessionDurationSeconds ?? 0)} delay={500} isLoading={isLoading} />
         </div>
       </div>
 

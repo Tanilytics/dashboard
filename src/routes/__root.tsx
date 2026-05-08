@@ -2,7 +2,6 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-  Outlet,
 } from '@tanstack/react-router'
 import { Toaster } from '#/components/ui/sonner'
 import { Provider as JotaiProvider } from 'jotai'

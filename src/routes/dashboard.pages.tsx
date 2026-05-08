@@ -2,19 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
-
-const allPages = [
-  { url: '/blog/hello-world', views: 3241, visitors: 2104, sessions: 2400, avgTime: 142 },
-  { url: '/about', views: 1892, visitors: 1560, sessions: 1700, avgTime: 89 },
-  { url: '/blog/design-systems', views: 1504, visitors: 1201, sessions: 1350, avgTime: 234 },
-  { url: '/podcast/ep-42', views: 987, visitors: 843, sessions: 920, avgTime: 1856 },
-  { url: '/video/tutorial-1', views: 654, visitors: 521, sessions: 600, avgTime: 420 },
-  { url: '/blog/getting-started', views: 543, visitors: 432, sessions: 480, avgTime: 120 },
-  { url: '/contact', views: 432, visitors: 389, sessions: 410, avgTime: 45 },
-  { url: '/blog/performance', views: 389, visitors: 312, sessions: 350, avgTime: 198 },
-  { url: '/video/intro', views: 321, visitors: 278, sessions: 300, avgTime: 180 },
-  { url: '/podcast/ep-41', views: 287, visitors: 245, sessions: 260, avgTime: 1720 },
-]
+import { Skeleton } from '#/components/ui/skeleton'
+import { useAuth } from '#/hooks/use-auth'
+import { usePages, getLast7Days } from '#/lib/queries'
 
 export const Route = createFileRoute('/dashboard/pages')({
   component: PagesPage,
@@ -27,18 +17,24 @@ function formatTime(seconds: number) {
 }
 
 function PagesPage() {
+  const { currentSiteId } = useAuth()
+  const { from, to } = getLast7Days()
+  const { data, isLoading } = usePages(currentSiteId, from, to, 50)
   const [search, setSearch] = useState('')
-  const [sortKey, setSortKey] = useState<'views' | 'visitors' | 'sessions' | 'avgTime'>('views')
+  const [sortKey, setSortKey] = useState<'views' | 'uniqueVisitors' | 'uniqueSessions' | 'avgTimeOnPageSeconds'>('views')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   const filtered = useMemo(() => {
-    let data = allPages.filter((p) => p.url.toLowerCase().includes(search.toLowerCase()))
-    data = [...data].sort((a, b) => {
+    let list = data || []
+    if (search) {
+      list = list.filter((p) => p.url.toLowerCase().includes(search.toLowerCase()))
+    }
+    list = [...list].sort((a, b) => {
       const diff = a[sortKey] - b[sortKey]
       return sortDir === 'asc' ? diff : -diff
     })
-    return data
-  }, [search, sortKey, sortDir])
+    return list
+  }, [data, search, sortKey, sortDir])
 
   const toggleSort = (key: typeof sortKey) => {
     if (sortKey === key) {
@@ -61,9 +57,13 @@ function PagesPage() {
         />
       </CardHeader>
       <CardContent>
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <Skeleton className="h-[400px] w-full" />
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-muted-foreground mb-4">No pages found matching "{search}"</div>
+            <div className="text-muted-foreground mb-4">
+              {search ? `No pages found matching "${search}"` : 'No data yet'}
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto border border-border rounded-xl">
@@ -79,21 +79,21 @@ function PagesPage() {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium cursor-pointer hover:text-foreground"
-                    onClick={() => toggleSort('visitors')}
+                    onClick={() => toggleSort('uniqueVisitors')}
                   >
-                    Visitors {sortKey === 'visitors' && (sortDir === 'desc' ? '↓' : '↑')}
+                    Visitors {sortKey === 'uniqueVisitors' && (sortDir === 'desc' ? '↓' : '↑')}
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium cursor-pointer hover:text-foreground"
-                    onClick={() => toggleSort('sessions')}
+                    onClick={() => toggleSort('uniqueSessions')}
                   >
-                    Sessions {sortKey === 'sessions' && (sortDir === 'desc' ? '↓' : '↑')}
+                    Sessions {sortKey === 'uniqueSessions' && (sortDir === 'desc' ? '↓' : '↑')}
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider text-muted-foreground font-medium cursor-pointer hover:text-foreground"
-                    onClick={() => toggleSort('avgTime')}
+                    onClick={() => toggleSort('avgTimeOnPageSeconds')}
                   >
-                    Avg Time {sortKey === 'avgTime' && (sortDir === 'desc' ? '↓' : '↑')}
+                    Avg Time {sortKey === 'avgTimeOnPageSeconds' && (sortDir === 'desc' ? '↓' : '↑')}
                   </th>
                 </tr>
               </thead>
@@ -102,9 +102,9 @@ function PagesPage() {
                   <tr key={page.url} className="border-b border-border last:border-0 hover:bg-[oklch(28%_0.015_60_/_0.4)] transition-colors">
                     <td className="px-4 py-3 truncate max-w-[300px]" title={page.url}>{page.url}</td>
                     <td className="px-4 py-3">{page.views.toLocaleString()}</td>
-                    <td className="px-4 py-3">{page.visitors.toLocaleString()}</td>
-                    <td className="px-4 py-3">{page.sessions.toLocaleString()}</td>
-                    <td className="px-4 py-3">{formatTime(page.avgTime)}</td>
+                    <td className="px-4 py-3">{page.uniqueVisitors.toLocaleString()}</td>
+                    <td className="px-4 py-3">{page.uniqueSessions.toLocaleString()}</td>
+                    <td className="px-4 py-3">{formatTime(page.avgTimeOnPageSeconds)}</td>
                   </tr>
                 ))}
               </tbody>
