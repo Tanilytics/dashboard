@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, lazy, Suspense } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { createPixelReveal } from "landing-effects";
 
 import CardNav from "@/components/bits/CardNav";
-import MagicBento from "@/components/bits/MagicBento";
 import { redirectIfAuth } from "#/lib/auth-guards";
+
+const MagicBento = lazy(() => import("@/components/bits/MagicBento"));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -332,19 +333,21 @@ function LandingPage() {
             </p>
           </div>
 
-          <MagicBento
-            textAutoHide={true}
-            enableStars
-            enableSpotlight
-            enableBorderGlow={true}
-            enableTilt={false}
-            enableMagnetism={false}
-            clickEffect
-            spotlightRadius={400}
-            particleCount={12}
-            glowColor="217, 119, 87"
-            disableAnimations={false}
-          />
+          <Suspense fallback={<div className="h-96" />}>
+            <MagicBento
+              textAutoHide={true}
+              enableStars
+              enableSpotlight
+              enableBorderGlow={true}
+              enableTilt={false}
+              enableMagnetism={false}
+              clickEffect
+              spotlightRadius={400}
+              particleCount={12}
+              glowColor="217, 119, 87"
+              disableAnimations={false}
+            />
+          </Suspense>
         </section>
 
         {/* CTA */}

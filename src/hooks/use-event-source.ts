@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 
 export function useEventSource(
   url: string | null | undefined,
+  token: string | null | undefined,
   onMessage: (data: string) => void,
   enabled = true,
 ) {
@@ -11,17 +12,14 @@ export function useEventSource(
   useEffect(() => {
     if (!url || !enabled) return
 
-    const resolvedUrl = url
     let cancelled = false
     let retryTimeout: ReturnType<typeof setTimeout> | null = null
     const abortCtrl = new AbortController()
 
     async function connect() {
-      const token =
-        typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
-
+      if (!url) return
       try {
-        const res = await fetch(resolvedUrl, {
+        const res = await fetch(url, {
           headers: {
             Accept: 'text/event-stream',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -78,5 +76,5 @@ export function useEventSource(
       abortCtrl.abort()
       if (retryTimeout) clearTimeout(retryTimeout)
     }
-  }, [url, enabled])
+  }, [url, token, enabled])
 }

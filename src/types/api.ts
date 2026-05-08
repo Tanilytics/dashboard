@@ -16,7 +16,7 @@ export interface SiteResponse {
   name: string
   domain: string
   apiKey: string
-  settings: Record<string, unknown>
+  settings: Record<string, any>
   retentionDays: number
   rateLimitRps: number
   createdAt: string

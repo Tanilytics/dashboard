@@ -5,8 +5,7 @@ import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Card, CardContent } from "#/components/ui/card";
-import { useAuth } from "#/hooks/use-auth";
-import { authApi } from "#/lib/api";
+import { login as loginFn } from "#/lib/api.functions";
 import { toast } from "sonner";
 import { redirectIfAuth } from "#/lib/auth-guards";
 
@@ -27,33 +26,23 @@ function TanilyticsLogo({ className }: { className?: string }) {
 function LoginPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const tokens = await authApi.login(email, password);
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
-
-      setUser({
-        id: "",
-        email,
-        role: "admin",
-        createdAt: new Date().toISOString(),
-      });
+      await loginFn({ data: { email, password } });
       qc.invalidateQueries({ queryKey: ['auth', 'user'] });
       qc.invalidateQueries({ queryKey: ['sites'] });
 
       toast.success("Signed in successfully");
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      toast.error(err.detail || err.message || "Failed to sign in");
+      toast.error(err.message || "Failed to sign in");
     } finally {
       setIsLoading(false);
     }

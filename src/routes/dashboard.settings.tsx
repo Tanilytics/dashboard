@@ -40,7 +40,7 @@ function SettingsPage() {
   const [rotatedKey, setRotatedKey] = useState('')
   const [addMemberModalOpen, setAddMemberModalOpen] = useState(false)
   const [newMemberEmail, setNewMemberEmail] = useState('')
-  const [newMemberRole, setNewMemberRole] = useState('viewer')
+  const [newMemberRole, setNewMemberRole] = useState<'admin' | 'editor' | 'viewer'>('viewer')
 
   useEffect(() => {
     if (settings) {
@@ -324,7 +324,7 @@ function SettingsPage() {
               <Label className="text-[13px] font-medium">Role</Label>
               <select
                 value={newMemberRole}
-                onChange={(e) => setNewMemberRole(e.target.value)}
+                onChange={(e) => setNewMemberRole(e.target.value as 'admin' | 'editor' | 'viewer')}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
               >
                 <option value="viewer">Viewer</option>

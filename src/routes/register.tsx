@@ -5,8 +5,7 @@ import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Card, CardContent } from "#/components/ui/card";
-import { useAuth } from "#/hooks/use-auth";
-import { authApi } from "#/lib/api";
+import { register as registerFn } from "#/lib/api.functions";
 import { toast } from "sonner";
 import { redirectIfAuth } from "#/lib/auth-guards";
 
@@ -50,13 +49,12 @@ function PasswordStrength({ password }: { password: string }) {
 function RegisterPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -65,17 +63,13 @@ function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const user = await authApi.register(email, password);
-      const tokens = await authApi.login(email, password);
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
-      setUser(user);
+      await registerFn({ data: { email, password, confirmPassword } });
       qc.invalidateQueries({ queryKey: ['auth', 'user'] });
       qc.invalidateQueries({ queryKey: ['sites'] });
       toast.success("Account created");
       navigate({ to: "/onboarding" });
     } catch (err: any) {
-      toast.error(err.detail || err.message || "Failed to create account");
+      toast.error(err.message || "Failed to create account");
     } finally {
       setIsLoading(false);
     }

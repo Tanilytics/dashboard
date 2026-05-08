@@ -14,7 +14,7 @@ import {
 import { Pause, Play } from 'lucide-react'
 import { useAuth } from '#/hooks/use-auth'
 import { useRealtime } from '#/lib/queries'
-import { analyticsApi } from '#/lib/api'
+import { getStreamConfig } from '#/lib/api.functions'
 import { useEventSource } from '#/hooks/use-event-source'
 
 function formatTime(date: Date) {
@@ -36,6 +36,7 @@ function RealtimePage() {
   const [events, setEvents] = useState<string[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
   const [sparklineData, setSparklineData] = useState<{ time: string; value: number }[]>([])
+  const [streamConfig, setStreamConfig] = useState<{ url: string; token: string } | null>(null)
 
   // Update stats from API
   useEffect(() => {
@@ -56,10 +57,19 @@ function RealtimePage() {
     }
   }, [realtimeData])
 
+  // Fetch stream config when site changes
+  useEffect(() => {
+    if (!currentSiteId) {
+      setStreamConfig(null)
+      return
+    }
+    getStreamConfig({ data: { siteId: currentSiteId } }).then(setStreamConfig)
+  }, [currentSiteId])
+
   // Event stream via SSE
-  const url = currentSiteId ? analyticsApi.streamUrl(currentSiteId) : null
   useEventSource(
-    url,
+    streamConfig?.url ?? null,
+    streamConfig?.token ?? null,
     (data) => {
       try {
         const parsed = JSON.parse(data)
