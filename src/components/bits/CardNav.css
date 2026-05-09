@@ -1,260 +1,268 @@
 .cardnav-wrapper {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 2rem);
-  max-width: 1200px;
-  z-index: 99;
-  top: 1.2em;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(100% - 2rem);
+	max-width: 1200px;
+	z-index: 99;
+	top: 1.2em;
 }
 
 @media (min-width: 768px) {
-  .cardnav-wrapper {
-    top: 2em;
-  }
+	.cardnav-wrapper {
+		top: 2em;
+	}
 }
 
 /* ── Nav container ── */
 .cardnav-nav {
-  display: block;
-  height: 60px;
-  padding: 0;
-  border-radius: 0.75rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px oklch(28% 0.015 60 / 0.5);
-  position: relative;
-  overflow: hidden;
-  will-change: height;
-  border: 1px solid oklch(28% 0.015 60 / 0.5);
+	display: block;
+	height: 60px;
+	padding: 0;
+	border-radius: 0.75rem;
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.4),
+		0 0 0 1px oklch(28% 0.015 60 / 0.5);
+	position: relative;
+	overflow: hidden;
+	will-change: height;
+	border: 1px solid oklch(28% 0.015 60 / 0.5);
 }
 
 /* ── Top bar ── */
 .cardnav-top {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-  padding-left: 1.1rem;
-  z-index: 2;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem;
+	padding-left: 1.1rem;
+	z-index: 2;
 }
 
 /* Hamburger */
 .cardnav-hamburger {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  gap: 6px;
-  order: 2;
-  padding: 8px;
-  transition: opacity 0.2s ease;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	gap: 6px;
+	order: 2;
+	padding: 8px;
+	transition: opacity 0.2s ease;
 }
 
 .cardnav-hamburger:hover {
-  opacity: 0.75;
+	opacity: 0.75;
 }
 
 @media (min-width: 768px) {
-  .cardnav-hamburger {
-    order: 0;
-  }
+	.cardnav-hamburger {
+		order: 0;
+	}
 }
 
 .cardnav-hamburger-line {
-  display: block;
-  width: 30px;
-  height: 2px;
-  background: currentColor;
-  border-radius: 1px;
-  transition: transform 0.3s linear, opacity 0.3s linear;
-  transform-origin: 50% 50%;
+	display: block;
+	width: 30px;
+	height: 2px;
+	background: currentColor;
+	border-radius: 1px;
+	transition:
+		transform 0.3s linear,
+		opacity 0.3s linear;
+	transform-origin: 50% 50%;
 }
 
 .cardnav-hamburger.open .cardnav-hamburger-line:first-child {
-  transform: translateY(4px) rotate(45deg);
+	transform: translateY(4px) rotate(45deg);
 }
 
 .cardnav-hamburger.open .cardnav-hamburger-line:last-child {
-  transform: translateY(-4px) rotate(-45deg);
+	transform: translateY(-4px) rotate(-45deg);
 }
 
 /* Logo */
 .cardnav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #f5f0eb;
-  text-decoration: none;
-  order: 1;
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition: opacity 0.2s ease;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: #f5f0eb;
+	text-decoration: none;
+	order: 1;
+	font-family: var(--font-display);
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	transition: opacity 0.2s ease;
 }
 
 .cardnav-logo:hover {
-  opacity: 0.85;
+	opacity: 0.85;
 }
 
 @media (min-width: 768px) {
-  .cardnav-logo {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    order: 0;
-  }
+	.cardnav-logo {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		order: 0;
+	}
 }
 
 /* CTA button */
 .cardnav-cta {
-  display: none;
-  border: 1px solid oklch(38% 0.02 60);
-  border-radius: calc(0.75rem - 0.2rem);
-  padding: 0 18px;
-  align-items: center;
-  height: calc(100% - 4px);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  white-space: nowrap;
+	display: none;
+	border: 1px solid oklch(38% 0.02 60);
+	border-radius: calc(0.75rem - 0.2rem);
+	padding: 0 18px;
+	align-items: center;
+	height: calc(100% - 4px);
+	font-family: var(--font-body);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	text-decoration: none;
+	white-space: nowrap;
 }
 
 .cardnav-cta:hover {
-  border-color: #d97757;
-  background: #d97757 !important;
-  color: #0c0a09 !important;
+	border-color: #d97757;
+	background: #d97757 !important;
+	color: #0c0a09 !important;
 }
 
 @media (min-width: 768px) {
-  .cardnav-cta {
-    display: inline-flex;
-  }
+	.cardnav-cta {
+		display: inline-flex;
+	}
 }
 
 /* ── Expandable content ── */
 .cardnav-content {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 60px;
-  bottom: 0;
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.5rem;
-  justify-content: flex-start;
-  z-index: 1;
-  visibility: hidden;
-  pointer-events: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 60px;
+	bottom: 0;
+	padding: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.5rem;
+	justify-content: flex-start;
+	z-index: 1;
+	visibility: hidden;
+	pointer-events: none;
 }
 
 .cardnav-content.expanded {
-  visibility: visible;
-  pointer-events: auto;
+	visibility: visible;
+	pointer-events: auto;
 }
 
 @media (min-width: 768px) {
-  .cardnav-content {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 12px;
-  }
+	.cardnav-content {
+		flex-direction: row;
+		align-items: stretch;
+		gap: 12px;
+	}
 }
 
 /* ── Cards ── */
 .cardnav-card {
-  user-select: none;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 16px;
-  border-radius: calc(0.75rem - 0.2rem);
-  min-width: 0;
-  flex: 1 1 auto;
-  height: auto;
-  min-height: 60px;
-  transition: transform 0.3s ease, border-color 0.3s ease;
-  border: 1px solid transparent;
+	user-select: none;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px 16px;
+	border-radius: calc(0.75rem - 0.2rem);
+	min-width: 0;
+	flex: 1 1 auto;
+	height: auto;
+	min-height: 60px;
+	transition:
+		transform 0.3s ease,
+		border-color 0.3s ease;
+	border: 1px solid transparent;
 }
 
 .cardnav-card:hover {
-  transform: translateY(-2px);
-  border-color: oklch(58% 0.16 35 / 0.2);
+	transform: translateY(-2px);
+	border-color: oklch(58% 0.16 35 / 0.2);
 }
 
 @media (min-width: 768px) {
-  .cardnav-card {
-    height: 100%;
-    min-height: 0;
-    flex: 1 1 0%;
-  }
+	.cardnav-card {
+		height: 100%;
+		min-height: 0;
+		flex: 1 1 0%;
+	}
 }
 
 .cardnav-card-label {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.5px;
-  font-size: 18px;
-  line-height: 1.2;
+	font-family: var(--font-display);
+	font-weight: 600;
+	letter-spacing: -0.5px;
+	font-size: 18px;
+	line-height: 1.2;
 }
 
 @media (min-width: 768px) {
-  .cardnav-card-label {
-    font-size: 22px;
-  }
+	.cardnav-card-label {
+		font-size: 22px;
+	}
 }
 
 .cardnav-card-links {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+	margin-top: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 }
 
 .cardnav-card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.5;
-  text-decoration: none;
-  cursor: pointer;
-  padding: 3px 0;
-  transition: opacity 0.3s ease, color 0.3s ease;
-  color: inherit;
-  opacity: 0.7;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--font-body);
+	font-size: 15px;
+	line-height: 1.5;
+	text-decoration: none;
+	cursor: pointer;
+	padding: 3px 0;
+	transition:
+		opacity 0.3s ease,
+		color 0.3s ease;
+	color: inherit;
+	opacity: 0.7;
 }
 
 .cardnav-card-link:hover {
-  opacity: 1;
-  color: #d97757;
+	opacity: 1;
+	color: #d97757;
 }
 
 .cardnav-link-arrow {
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
+	flex-shrink: 0;
+	transition: transform 0.2s ease;
 }
 
 .cardnav-card-link:hover .cardnav-link-arrow {
-  transform: translate(1px, -1px);
+	transform: translate(1px, -1px);
 }
 
 @media (min-width: 768px) {
-  .cardnav-card-link {
-    font-size: 16px;
-  }
+	.cardnav-card-link {
+		font-size: 16px;
+	}
 }

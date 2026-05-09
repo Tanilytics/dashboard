@@ -1,5 +1,5 @@
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default function TanStackQueryDevtools() {
-  return <ReactQueryDevtools />
+	return <ReactQueryDevtools />;
 }

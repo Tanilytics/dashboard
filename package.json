@@ -24,13 +24,6 @@
     "@sentry/tanstackstart-react": "^10.42.0",
     "@t3-oss/env-core": "^0.13.10",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/ai": "latest",
-    "@tanstack/ai-anthropic": "latest",
-    "@tanstack/ai-client": "latest",
-    "@tanstack/ai-gemini": "latest",
-    "@tanstack/ai-ollama": "latest",
-    "@tanstack/ai-openai": "latest",
-    "@tanstack/ai-react": "latest",
     "@tanstack/match-sorter-utils": "latest",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-query": "latest",
@@ -92,3 +85,4 @@
     ]
   }
 }
+
